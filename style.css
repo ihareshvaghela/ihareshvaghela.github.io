@@ -663,3 +663,103 @@ a:focus-visible, button:focus-visible {
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* Featured Card Animation */
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 40px;
+  position: relative;
+  transition: transform 0.4s var(--ease-spring), border-color 0.3s;
+  animation: float 6s ease-in-out infinite;
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+  animation-play-state: paused; /* Pause float on hover for stability */
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.project-content h3 { font-size: 24px; margin-bottom: 12px; }
+.project-content p { color: var(--text-muted); margin-bottom: 24px; max-width: 600px; }
+
+/* ============================================
+   PROJECTS SECTION ANIMATIONS
+   ============================================ */
+.projects-section { padding-bottom: 40px; }
+
+.project-card {
+  background: linear-gradient(145deg, var(--surface), var(--surface-2));
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s var(--ease-spring), border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Background animated glow */
+.project-card::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%; width: 200%; height: 200%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.project-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(0,0,0,0.3);
+}
+
+.project-card:hover::after {
+  opacity: 1;
+  animation: rotateGlow 10s linear infinite;
+}
+
+@keyframes rotateGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Keep content above the background glow */
+.project-content { position: relative; z-index: 1; }
+.project-content h3 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+.project-content p { font-size: 15.5px; color: var(--text-muted); line-height: 1.6; margin-bottom: 32px; max-width: 600px; }
+
+/* Pulsing Badge */
+.tag-pulse {
+  display: inline-block;
+  margin-bottom: 16px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--accent-bright);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  animation: pulseBorder 2s infinite;
+}
+
+@keyframes pulseBorder {
+  0% { box-shadow: 0 0 0 0 var(--accent-soft); }
+  70% { box-shadow: 0 0 0 6px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+@media (max-width: 860px) {
+  .project-card { padding: 32px 24px; }
+  .project-content h3 { font-size: 24px; }
+}
