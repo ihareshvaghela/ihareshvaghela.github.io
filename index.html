@@ -1,111 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Ihareshvaghela</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-  <meta name="author" content="">
-
-  <!-- Font Awesome if you need it
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
-  -->
-  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css"/> 
-  <!--Replace with your tailwind.css once created-->
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haresh Vaghela — Android Engineer</title>
+<meta name="description" content="Haresh Vaghela, Android Software Engineer based in Ahmedabad, India.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
+<body>
 
-<body class="font-sans antialiased text-gray-900 leading-normal tracking-wider bg-cover" style="background-image:url('https://images.unsplash.com/photo-1643528076214-31990d61a6ce');">
+<!-- Ambient cursor glow + grid -->
+<div class="bg-grid" aria-hidden="true"></div>
+<canvas id="particles" aria-hidden="true"></canvas>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
+<!-- Custom cursor dot -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
-
-  <div class="max-w-4xl flex items-center h-auto lg:h-screen flex-wrap mx-auto my-32 lg:my-0">
-    
-	<!--Main Col-->
-	<div id="profile" class="w-full lg:w-3/5 rounded-lg lg:rounded-l-lg lg:rounded-r-none shadow-2xl bg-white opacity-75 mx-6 lg:mx-0">
-	
-
-		<div class="p-4 md:p-12 text-center lg:text-left">
-			<!-- Image for mobile view-->
-			<div class="block lg:hidden rounded-full shadow-xl mx-auto -mt-16 h-48 w-48 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1643528076214-31990d61a6ce?auto=format&fit=crop&q=80&w=1974&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"></div>
-			
-			<h1 class="text-3xl font-bold pt-8 lg:pt-0">Haresh V</h1>
-			<div class="mx-auto lg:mx-0 w-4/5 pt-3 border-b-2 border-green-500 opacity-25"></div>
-			<p class="pt-4 text-base font-bold flex items-center justify-center lg:justify-start"><svg class="h-4 fill-current text-green-700 pr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9 12H1v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6h-8v2H9v-2zm0-1H0V5c0-1.1.9-2 2-2h4V2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1h4a2 2 0 0 1 2 2v6h-9V9H9v2zm3-8V2H8v1h4z"/></svg>Software engineer</p>
-			<p class="pt-2 text-gray-600 text-xs lg:text-sm flex items-center justify-center lg:justify-start"><svg class="h-4 fill-current text-green-700 pr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm7.75-8a8.01 8.01 0 0 0 0-4h-3.82a28.81 28.81 0 0 1 0 4h3.82zm-.82 2h-3.22a14.44 14.44 0 0 1-.95 3.51A8.03 8.03 0 0 0 16.93 14zm-8.85-2h3.84a24.61 24.61 0 0 0 0-4H8.08a24.61 24.61 0 0 0 0 4zm.25 2c.41 2.4 1.13 4 1.67 4s1.26-1.6 1.67-4H8.33zm-6.08-2h3.82a28.81 28.81 0 0 1 0-4H2.25a8.01 8.01 0 0 0 0 4zm.82 2a8.03 8.03 0 0 0 4.17 3.51c-.42-.96-.74-2.16-.95-3.51H3.07zm13.86-8a8.03 8.03 0 0 0-4.17-3.51c.42.96.74 2.16.95 3.51h3.22zm-8.6 0h3.34c-.41-2.4-1.13-4-1.67-4S8.74 3.6 8.33 6zM3.07 6h3.22c.2-1.35.53-2.55.95-3.51A8.03 8.03 0 0 0 3.07 6z"/></svg> Ahmedabad - India</p>
-			<p class="pt-8 text-sm">Android Dev</p>
-
-			<div class="pt-12 pb-8">
-				<a href="mailto:kuiperbelt04@proton.me" class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-full">
-				  Get In Touch
-				</a> 
-			</div>
-
-			<div class="mt-6 pb-16 lg:pb-0 w-4/5 lg:w-full mx-auto flex flex-wrap items-center justify-between">
-				<a class="link" href="https://github.com/ihareshvaghela" data-tippy-content="@github"><svg class="h-6 fill-current text-gray-600 hover:text-green-700" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
-				<a class="link" href="https://unsplash.com/@ihareshvaghela" data-tippy-content="@unsplash_handle"><svg class="h-6 fill-current text-gray-600 hover:text-green-700" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Unsplash</title><path d="M7.5 6.75V0h9v6.75h-9zm9 3.75H24V24H0V10.5h7.5v6.75h9V10.5z"/></svg></a>
-				<a class="link" href="https://medium.com/@ihareshvaghela" data-tippy-content="@Medium"><svg class="h-6 fill-current text-gray-600 hover:text-green-700" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Medium</title><path d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm7.75-8a8.01 8.01 0 0 0 0-4h-3.82a28.81 28.81 0 0 1 0 4h3.82zm-.82 2h-3.22a14.44 14.44 0 0 1-.95 3.51A8.03 8.03 0 0 0 16.93 14zm-8.85-2h3.84a24.61 24.61 0 0 0 0-4H8.08a24.61 24.61 0 0 0 0 4zm.25 2c.41 2.4 1.13 4 1.67 4s1.26-1.6 1.67-4H8.33zm-6.08-2h3.82a28.81 28.81 0 0 1 0-4H2.25a8.01 8.01 0 0 0 0 4zm.82 2a8.03 8.03 0 0 0 4.17 3.51c-.42-.96-.74-2.16-.95-3.51H3.07zm13.86-8a8.03 8.03 0 0 0-4.17-3.51c.42.96.74 2.16.95 3.51h3.22zm-8.6 0h3.34c-.41-2.4-1.13-4-1.67-4S8.74 3.6 8.33 6zM3.07 6h3.22c.2-1.35.53-2.55.95-3.51A8.03 8.03 0 0 0 3.07 6z"/></svg></a>
-			</div>
-			
-			<!-- Use https://simpleicons.org/ to find the svg for your preferred product --> 
-
-		</div>
-
-	</div>
-	
-	<!--Img Col-->
-	<div class="w-full lg:w-2/5">
-		<!-- Big profile image for side bar (desktop) -->
-		<img src="https://images.unsplash.com/photo-1696223407837-1472f85a73cb?auto=format&fit=crop&q=80&w=1935&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="rounded-none lg:rounded-lg shadow-2xl hidden lg:block">
-		<!-- Image from: http://unsplash.com/photos/MP0IUfwrn0A -->
-		
-	</div>
-	
-	<!-- Pin to top right corner -->
-	  <div class="absolute top-0 right-0 h-12 w-18 p-4">
-		<button class="js-change-theme focus:outline-none">🌙</button>
-	  </div>
-
+<div class="boot-screen" id="bootScreen">
+  <div class="boot-text">
+    <span class="boot-line">$ ./gradlew :portfolio:assembleRelease</span>
+    <span class="boot-line boot-line-2">&gt; Task :portfolio:compile <span class="boot-ok">UP-TO-DATE</span></span>
+    <span class="boot-line boot-line-3">&gt; Task :portfolio:launch <span class="boot-dots">...</span></span>
+  </div>
 </div>
 
-	<script src="https://unpkg.com/popper.js@1/dist/umd/popper.min.js"></script>
-	<script src="https://unpkg.com/tippy.js@4"></script>
-	<script>
-		//Init tooltips
-		tippy('.link',{
-		  placement: 'bottom'
-		})
+<div class="app" id="app">
 
-		//Toggle mode
-		const toggle = document.querySelector('.js-change-theme');
-		const body = document.querySelector('body');
-		const profile = document.getElementById('profile');
-		
-		
-		toggle.addEventListener('click', () => {
+  <!-- LEFT RAIL -->
+  <aside class="rail">
+    <div class="rail-top">
+      <div class="logo-mark" data-tilt>
+        <span class="logo-bracket">&lt;</span><span class="logo-slash">/</span><span class="logo-bracket">&gt;</span>
+      </div>
+      <div class="rail-name">
+        <span class="rail-name-main">Haresh</span>
+        <span class="rail-name-sub">Vaghela</span>
+      </div>
+    </div>
 
-		  if (body.classList.contains('text-gray-900')) {
-			toggle.innerHTML = "☀️";
-			body.classList.remove('text-gray-900');
-			body.classList.add('text-gray-100');
-			profile.classList.remove('bg-white');
-			profile.classList.add('bg-gray-900');
-		  } else
-		  {
-			toggle.innerHTML = "🌙";
-			body.classList.remove('text-gray-100');
-			body.classList.add('text-gray-900');
-			profile.classList.remove('bg-gray-900');			
-			profile.classList.add('bg-white');
-			
-		  }
-		});
-		
-    </script>
-	
+    <nav class="rail-nav">
+      <a href="#about" class="rail-link" data-target="about">
+        <span class="rail-icon" aria-hidden="true">01</span>
+        <span class="rail-label">About.kt</span>
+      </a>
+      <a href="#stack" class="rail-link" data-target="stack">
+        <span class="rail-icon" aria-hidden="true">02</span>
+        <span class="rail-label">Stack.kt</span>
+      </a>
+      <a href="#work" class="rail-link" data-target="work">
+        <span class="rail-icon" aria-hidden="true">03</span>
+        <span class="rail-label">Work.kt</span>
+      </a>
+      <a href="#connect" class="rail-link" data-target="connect">
+        <span class="rail-icon" aria-hidden="true">04</span>
+        <span class="rail-label">Connect.kt</span>
+      </a>
+    </nav>
+
+    <div class="rail-bottom">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" data-tilt>
+        <span class="theme-icon" id="themeIcon">●</span>
+      </button>
+      <div class="rail-status">
+        <span class="status-dot"></span>
+        <span class="status-text">Open to work</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- HERO -->
+    <section class="hero" id="about">
+      <div class="hero-grid">
+
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span>Ahmedabad, India — IST (UTC+5:30)</p>
+
+          <h1 class="hero-title">
+            <span class="reveal-line"><span class="reveal-inner">Building</span></span>
+            <span class="reveal-line"><span class="reveal-inner">native <em>Android</em></span></span>
+            <span class="reveal-line"><span class="reveal-inner">experiences.</span></span>
+          </h1>
+
+          <p class="hero-desc reveal-fade">
+            Software engineer focused on Kotlin, Jetpack Compose, and the
+            unglamorous plumbing that makes apps feel instant. I care about
+            cold-start time, smooth scrolling, and code that survives the
+            next engineer who reads it.
+          </p>
+
+          <div class="hero-actions reveal-fade">
+            <a href="mailto:kuiperbelt04@proton.me" class="btn-primary magnetic">
+              <span>Get in touch</span>
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#work" class="btn-ghost magnetic">View work</a>
+          </div>
+        </div>
+
+        <div class="hero-editor reveal-fade">
+          <div class="editor-window" data-tilt-strong>
+            <div class="editor-titlebar">
+              <div class="editor-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <div class="editor-tabs">
+                <span class="editor-tab editor-tab-active">Haresh.kt</span>
+                <span class="editor-tab">build.gradle.kts</span>
+              </div>
+            </div>
+            <div class="editor-body">
+              <div class="editor-gutter" id="editorGutter"></div>
+              <pre class="editor-code" id="editorCode"></pre>
+              <span class="editor-cursor-blink" id="typeCursor"></span>
+            </div>
+            <div class="editor-statusbar">
+              <span>UTF-8</span>
+              <span>Kotlin</span>
+              <span class="status-build">Build <span class="status-build-ok">passed</span></span>
+            </div>
+          </div>
+          <div class="editor-shadow-card card-2"></div>
+          <div class="editor-shadow-card card-3"></div>
+        </div>
+
+      </div>
+
+      <div class="scroll-hint">
+        <span class="scroll-line"></span>
+        <span>scroll</span>
+      </div>
+    </section>
+
+    <!-- STACK -->
+    <section class="stack-section" id="stack">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2 class="section-title">Stack<span class="accent-dot">.</span>kt</h2>
+        <p class="section-sub">Tools I reach for without thinking twice.</p>
+      </div>
+
+      <div class="stack-grid">
+        <div class="stack-card tilt-card" data-tilt-strong>
+          <span class="stack-card-tag">core</span>
+          <h3>Kotlin</h3>
+          <p>Coroutines, Flow, sealed classes for state — the whole idiomatic toolkit.</p>
+          <div class="stack-bar"><span style="--level:96%"></span></div>
+        </div>
+        <div class="stack-card tilt-card" data-tilt-strong>
+          <span class="stack-card-tag">ui</span>
+          <h3>Jetpack Compose</h3>
+          <p>Declarative UI, custom layouts, animation APIs, state hoisting done right.</p>
+          <div class="stack-bar"><span style="--level:92%"></span></div>
+        </div>
+        <div class="stack-card tilt-card" data-tilt-strong>
+          <span class="stack-card-tag">arch</span>
+          <h3>MVVM / Clean Arch</h3>
+          <p>Modularized apps, repository patterns, testable use-cases.</p>
+          <div class="stack-bar"><span style="--level:90%"></span></div>
+        </div>
+        <div class="stack-card tilt-card" data-tilt-strong>
+          <span class="stack-card-tag">data</span>
+          <h3>Room / SQLDelight</h3>
+          <p>Offline-first apps, migrations that don't wake you up at 3am.</p>
+          <div class="stack-bar"><span style="--level:85%"></span></div>
+        </div>
+        <div class="stack-card tilt-card" data-tilt-strong>
+          <span class="stack-card-tag">net</span>
+          <h3>Retrofit / Ktor</h3>
+          <p>REST, pagination, interceptors, and graceful failure states.</p>
+          <div class="stack-bar"><span style="--level:88%"></span></div>
+        </div>
+        <div class="stack-card tilt-card" data-tilt-strong>
+          <span class="stack-card-tag">ops</span>
+          <h3>CI / Gradle</h3>
+          <p>Build variants, custom Gradle tasks, faster pipelines.</p>
+          <div class="stack-bar"><span style="--level:80%"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK / LOG -->
+    <section class="work-section" id="work">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2 class="section-title">Work<span class="accent-dot">.</span>kt</h2>
+        <p class="section-sub">git log --oneline, abridged.</p>
+      </div>
+
+      <div class="commit-log">
+        <div class="commit-line"></div>
+
+        <div class="commit reveal-up">
+          <span class="commit-dot"></span>
+          <div class="commit-card">
+            <div class="commit-meta">
+              <span class="commit-hash">a3f29d1</span>
+              <span class="commit-date">2024 — Present</span>
+            </div>
+            <h3>Software Engineer, Android</h3>
+            <p>Owning core app modules end to end — architecture, performance audits, and mentoring on Compose migration from the legacy View system.</p>
+          </div>
+        </div>
+
+        <div class="commit reveal-up">
+          <span class="commit-dot"></span>
+          <div class="commit-card">
+            <div class="commit-meta">
+              <span class="commit-hash">9c14e7b</span>
+              <span class="commit-date">2022 — 2024</span>
+            </div>
+            <h3>Android Developer</h3>
+            <p>Shipped and maintained consumer apps with millions of installs. Cut cold-start time by profiling startup traces and trimming the dependency graph.</p>
+          </div>
+        </div>
+
+        <div class="commit reveal-up">
+          <span class="commit-dot"></span>
+          <div class="commit-card">
+            <div class="commit-meta">
+              <span class="commit-hash">5b08a44</span>
+              <span class="commit-date">2021 — 2022</span>
+            </div>
+            <h3>Junior Android Developer</h3>
+            <p>First commits, first crashes, first 2am hotfixes. Learned more from production incidents than any tutorial.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONNECT -->
+    <section class="connect-section" id="connect">
+      <div class="connect-card" data-tilt-strong>
+        <p class="eyebrow"><span class="eyebrow-dot"></span>Connect.kt</p>
+        <h2 class="connect-title">Got an app worth building?</h2>
+        <p class="connect-desc">I'm currently open to new roles and freelance Android work. Reach out — I read everything myself.</p>
+
+        <a href="mailto:kuiperbelt04@proton.me" class="btn-primary btn-large magnetic">
+          <span>kuiperbelt04@proton.me</span>
+          <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+
+        <div class="connect-links">
+          <a class="social-link magnetic" href="https://github.com/ihareshvaghela" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span>GitHub</span>
+          </a>
+          <a class="social-link magnetic" href="https://unsplash.com/@ihareshvaghela" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 6.75V0h9v6.75h-9zm9 3.75H24V24H0V10.5h7.5v6.75h9V10.5z"/></svg>
+            <span>Unsplash</span>
+          </a>
+          <a class="social-link magnetic" href="https://medium.com/@ihareshvaghela" target="_blank" rel="noopener">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4.37 7.3a.9.9 0 0 0-.3-.76L1.5 3.7v-.4h7.28l5.63 12.35L19.4 3.3h6.95v.4l-1.87 1.8a.56.56 0 0 0-.21.53v13.36a.56.56 0 0 0 .21.53l1.83 1.8v.4h-9.2v-.4l1.9-1.84c.19-.19.19-.24.19-.53V7.66l-5.27 13.4h-.71L6.36 7.66v8.98a1.27 1.27 0 0 0 .35 1.05l2.47 3v.4H2.13v-.4l2.47-3a1.22 1.22 0 0 0 .33-1.05V7.3z" transform="translate(-1.5 -1.3) scale(0.92)"/></svg>
+            <span>Medium</span>
+          </a>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <span>© 2026 Haresh Vaghela</span>
+        <span class="footer-build">// built with Kotlin-flavored curiosity</span>
+      </footer>
+    </section>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
 </body>
-
 </html>
