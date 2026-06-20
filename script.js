@@ -288,7 +288,7 @@ document.querySelectorAll('.stack-bar').forEach(el => barObserver.observe(el));
 /* ============================================
    ACTIVE NAV LINK ON SCROLL
    ============================================ */
-const sections = ['about', 'stack', 'work', 'connect'].map(id => document.getElementById(id));
+const sections = ['about', 'stack', 'projects', 'work', 'connect'].map(id => document.getElementById(id));
 const navLinks = document.querySelectorAll('.rail-link');
 
 const navObserver = new IntersectionObserver((entries) => {
