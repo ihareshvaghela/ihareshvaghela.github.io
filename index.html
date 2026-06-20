@@ -12,12 +12,10 @@
 </head>
 <body>
 
-<!-- Ambient cursor glow + grid -->
 <div class="bg-grid" aria-hidden="true"></div>
 <canvas id="particles" aria-hidden="true"></canvas>
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
-<!-- Custom cursor dot -->
 <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
@@ -31,7 +29,6 @@
 
 <div class="app" id="app">
 
-  <!-- LEFT RAIL -->
   <aside class="rail">
     <div class="rail-top">
       <div class="logo-mark" data-tilt>
@@ -52,12 +49,16 @@
         <span class="rail-icon" aria-hidden="true">02</span>
         <span class="rail-label">Stack.kt</span>
       </a>
-      <a href="#work" class="rail-link" data-target="work">
+      <a href="#projects" class="rail-link" data-target="projects">
         <span class="rail-icon" aria-hidden="true">03</span>
+        <span class="rail-label">Projects.kt</span>
+      </a>
+      <a href="#work" class="rail-link" data-target="work">
+        <span class="rail-icon" aria-hidden="true">04</span>
         <span class="rail-label">Work.kt</span>
       </a>
       <a href="#connect" class="rail-link" data-target="connect">
-        <span class="rail-icon" aria-hidden="true">04</span>
+        <span class="rail-icon" aria-hidden="true">05</span>
         <span class="rail-label">Connect.kt</span>
       </a>
     </nav>
@@ -73,10 +74,8 @@
     </div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
 
-    <!-- HERO -->
     <section class="hero" id="about">
       <div class="hero-grid">
 
@@ -141,7 +140,6 @@
       </div>
     </section>
 
-    <!-- STACK -->
     <section class="stack-section" id="stack">
       <div class="section-head">
         <span class="section-num">02</span>
@@ -189,10 +187,33 @@
       </div>
     </section>
 
-    <!-- WORK / LOG -->
-    <section class="work-section" id="work">
+    <section class="projects-section" id="projects">
       <div class="section-head">
         <span class="section-num">03</span>
+        <h2 class="section-title">Projects<span class="accent-dot">.</span>kt</h2>
+        <p class="section-sub">Apps shipped to the Play Store.</p>
+      </div>
+      
+      <div class="project-card reveal-up" data-tilt-strong>
+        <div class="project-content">
+          <span class="tag-pulse">Featured App</span>
+          <h3>ArticleFlow</h3>
+          <p>A curated reading experience designed for efficiency. Built with modern Android best practices to deliver content rapidly and reliably.</p>
+          <div class="hero-actions">
+            <a href="https://play.google.com/store/apps/details?id=com.articleflow&hl=en_IN" class="btn-primary magnetic" target="_blank" rel="noopener">
+              <span>View on Play Store</span>
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="https://sites.google.com/view/articleflow" class="btn-ghost magnetic" target="_blank" rel="noopener">View Website</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+	  
+    <section class="work-section" id="work">
+      <div class="section-head">
+        <span class="section-num">04</span>
         <h2 class="section-title">Work<span class="accent-dot">.</span>kt</h2>
         <p class="section-sub">git log --oneline, abridged.</p>
       </div>
@@ -209,36 +230,12 @@
             </div>
             <h3>Software Engineer, Android</h3>
             <p>Owning core app modules end to end — architecture, performance audits, and mentoring on Compose migration from the legacy View system.</p>
-          </div>
-        </div>
-
-        <div class="commit reveal-up">
-          <span class="commit-dot"></span>
-          <div class="commit-card">
-            <div class="commit-meta">
-              <span class="commit-hash">9c14e7b</span>
-              <span class="commit-date">2022 — 2024</span>
-            </div>
-            <h3>Android Developer</h3>
-            <p>Shipped and maintained consumer apps with millions of installs. Cut cold-start time by profiling startup traces and trimming the dependency graph.</p>
-          </div>
-        </div>
-
-        <div class="commit reveal-up">
-          <span class="commit-dot"></span>
-          <div class="commit-card">
-            <div class="commit-meta">
-              <span class="commit-hash">5b08a44</span>
-              <span class="commit-date">2021 — 2022</span>
-            </div>
-            <h3>Junior Android Developer</h3>
-            <p>First commits, first crashes, first 2am hotfixes. Learned more from production incidents than any tutorial.</p>
+			<p>Shipped and maintained consumer apps with millions of installs. Cut cold-start time by profiling startup traces and trimming the dependency graph.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- CONNECT -->
     <section class="connect-section" id="connect">
       <div class="connect-card" data-tilt-strong>
         <p class="eyebrow"><span class="eyebrow-dot"></span>Connect.kt</p>
