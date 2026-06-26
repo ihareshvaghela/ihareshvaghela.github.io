@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,271 +7,1767 @@
 <meta name="description" content="Haresh Vaghela, Android Software Engineer based in Ahmedabad, India.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --bg:           #09090E;
+  --bg-2:         #0F0F17;
+  --surface:      #12121A;
+  --surface-2:    #191924;
+  --surface-3:    #1F1F2E;
+  --border:       #1E1E2E;
+  --border-hover: #2E2E44;
+
+  --text:         #E8E8F0;
+  --text-muted:   #7A7A94;
+  --text-faint:   #3A3A52;
+
+  --accent:       #7C9A6F;       /* sage green */
+  --accent-dim:   rgba(124,154,111,.12);
+  --accent-glow:  rgba(124,154,111,.25);
+  --accent-light: #9FC28C;
+  --gold:         #C4A05A;       /* warm gold for highlights */
+  --gold-dim:     rgba(196,160,90,.12);
+  --rose:         #C07070;
+
+  --font-display: 'Space Grotesk', -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', monospace;
+
+  --ease-out:     cubic-bezier(.16,1,.3,1);
+  --ease-spring:  cubic-bezier(.34,1.56,.64,1);
+  --ease-expo:    cubic-bezier(.87,0,.13,1);
+
+  --rail-w: 232px;
+  --r: 12px;
+}
+
+[data-theme="light"] {
+  --bg:           #F2F2F7;
+  --bg-2:         #FAFAFA;
+  --surface:      #FFFFFF;
+  --surface-2:    #F5F5FA;
+  --surface-3:    #EDEDF5;
+  --border:       #E0E0EC;
+  --border-hover: #C8C8DC;
+  --text:         #16161E;
+  --text-muted:   #5C5C7A;
+  --text-faint:   #A0A0B8;
+  --accent:       #4F7A45;
+  --accent-dim:   rgba(79,122,69,.1);
+  --accent-glow:  rgba(79,122,69,.2);
+  --accent-light: #3D6335;
+  --gold:         #8B6E30;
+  --gold-dim:     rgba(139,110,48,.1);
+}
+
+/* ============================================================
+   RESET
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-display);
+  overflow-x: hidden;
+  cursor: none;
+  -webkit-font-smoothing: antialiased;
+  transition: background .6s var(--ease-out), color .6s var(--ease-out);
+}
+@media (max-width: 860px), (hover: none) {
+  body { cursor: auto; }
+  .cursor-dot, .cursor-ring { display: none; }
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent); color: #fff; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ============================================================
+   CURSOR
+   ============================================================ */
+.cursor-dot, .cursor-ring {
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.cursor-dot {
+  width: 5px; height: 5px;
+  background: var(--accent-light);
+  transition: width .2s, height .2s, opacity .2s;
+}
+.cursor-ring {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--accent);
+  opacity: .45;
+  transition: width .28s var(--ease-spring), height .28s var(--ease-spring), opacity .28s, border-color .28s;
+}
+.cursor-ring.hovering { width: 52px; height: 52px; opacity: .8; background: var(--accent-dim); border-color: var(--accent-light); }
+.cursor-ring.clicking { width: 20px; height: 20px; opacity: 1; }
+
+/* ============================================================
+   AMBIENT CANVAS
+   ============================================================ */
+#ambientCanvas {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none; opacity: .7;
+}
+
+/* ============================================================
+   NOISE OVERLAY
+   ============================================================ */
+.noise {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: .025;
+  mix-blend-mode: overlay;
+}
+
+/* ============================================================
+   BOOT SCREEN
+   ============================================================ */
+.boot {
+  position: fixed; inset: 0; z-index: 10000;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 20px;
+  animation: bootExit 2.8s var(--ease-out) forwards;
+}
+.boot-logo {
+  font-family: var(--font-mono); font-size: 28px; font-weight: 700;
+  color: var(--accent-light);
+  animation: bootPulse 1.2s var(--ease-out) forwards;
+}
+.boot-lines { display: flex; flex-direction: column; gap: 8px; font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); }
+.boot-line { opacity: 0; transform: translateY(4px); }
+.boot-line:nth-child(1) { animation: bootLine .35s .3s forwards; }
+.boot-line:nth-child(2) { animation: bootLine .35s .7s forwards; }
+.boot-line:nth-child(3) { animation: bootLine .35s 1.1s forwards; }
+.boot-ok { color: var(--accent-light); }
+@keyframes bootLine { to { opacity: 1; transform: translateY(0); } }
+@keyframes bootPulse {
+  0% { opacity: 0; transform: scale(.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes bootExit {
+  0%, 70% { opacity: 1; pointer-events: all; }
+  100% { opacity: 0; pointer-events: none; }
+}
+
+/* ============================================================
+   THEME TRANSITION RIPPLE
+   ============================================================ */
+.theme-ripple {
+  position: fixed;
+  border-radius: 50%;
+  width: 10px; height: 10px;
+  background: var(--bg);
+  transform: scale(0) translate(-50%, -50%);
+  transform-origin: 0 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+.theme-ripple.active {
+  animation: rippleExpand .65s var(--ease-expo) forwards;
+}
+@keyframes rippleExpand {
+  to { transform: scale(300) translate(-50%, -50%); opacity: 0; }
+}
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.app {
+  position: relative; z-index: 2;
+  display: flex; min-height: 100vh;
+}
+
+/* ============================================================
+   RAIL / SIDEBAR
+   ============================================================ */
+.rail {
+  width: var(--rail-w); flex-shrink: 0;
+  position: sticky; top: 0; height: 100vh;
+  display: flex; flex-direction: column;
+  background: rgba(9,9,14,.85);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border-right: 1px solid var(--border);
+  padding: 28px 20px;
+  z-index: 50;
+}
+[data-theme="light"] .rail { background: rgba(242,242,247,.88); }
+
+.rail-brand {
+  display: flex; align-items: center; gap: 13px;
+  margin-bottom: 32px;
+}
+.brand-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-hover);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 14px; font-weight: 700;
+  color: var(--accent-light);
+  flex-shrink: 0;
+  transition: transform .35s var(--ease-spring), box-shadow .35s;
+}
+.brand-icon:hover { transform: rotate(-8deg) scale(1.06); box-shadow: 0 0 0 2px var(--accent-glow); }
+.brand-name { display: flex; flex-direction: column; line-height: 1.2; }
+.brand-main { font-weight: 600; font-size: 14px; letter-spacing: -.01em; }
+.brand-sub { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+
+.rail-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+
+.nav-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 9px;
+  font-size: 13.5px; color: var(--text-muted);
+  position: relative;
+  transition: color .22s, background .22s;
+  letter-spacing: -.01em;
+}
+.nav-link::after {
+  content: '';
+  position: absolute; left: 0; top: 50%;
+  width: 2px; height: 0;
+  background: var(--accent);
+  transform: translateY(-50%);
+  border-radius: 2px;
+  transition: height .25s var(--ease-out);
+}
+.nav-link-num {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-faint); width: 16px; text-align: right;
+  transition: color .22s;
+  flex-shrink: 0;
+}
+.nav-link:hover { color: var(--text); background: var(--surface-2); }
+.nav-link:hover .nav-link-num { color: var(--accent); }
+.nav-link.active { color: var(--text); background: var(--surface-2); }
+.nav-link.active .nav-link-num { color: var(--accent); }
+.nav-link.active::after { height: 55%; }
+
+.rail-bottom {
+  display: flex; flex-direction: column; gap: 16px;
+  padding-top: 20px; border-top: 1px solid var(--border);
+}
+
+/* Theme Toggle — morphing sun/moon */
+.theme-toggle {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0;
+  background: none; border: none;
+  cursor: pointer; color: var(--text-muted);
+  font-family: var(--font-display); font-size: 13px;
+  transition: color .25s;
+}
+.theme-toggle:hover { color: var(--text); }
+.theme-toggle-track {
+  width: 44px; height: 24px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-hover);
+  border-radius: 24px;
+  position: relative;
+  flex-shrink: 0;
+  transition: background .4s, border-color .4s;
+}
+[data-theme="light"] .theme-toggle-track { background: var(--accent-dim); border-color: var(--accent); }
+.theme-toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: transform .4s var(--ease-spring), background .4s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+}
+[data-theme="light"] .theme-toggle-thumb {
+  transform: translateX(20px);
+  background: var(--accent);
+}
+.theme-toggle-thumb svg { transition: transform .4s var(--ease-spring), opacity .3s; }
+
+.rail-status {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent-light);
+  flex-shrink: 0;
+  animation: statusPulse 2.5s infinite;
+}
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  60% { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main {
+  flex: 1; min-width: 0;
+  padding: 0 clamp(24px, 5vw, 80px);
+}
+
+/* ============================================================
+   SECTION SHARED
+   ============================================================ */
+.section-label {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-faint); letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.section-label::before {
+  content: ''; flex: none;
+  width: 24px; height: 1px;
+  background: var(--accent); opacity: .6;
+}
+.section-title {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700; letter-spacing: -.03em;
+  line-height: 1.1; margin-bottom: 12px;
+}
+.section-sub {
+  font-size: 15px; color: var(--text-muted);
+  line-height: 1.6; margin-bottom: 56px;
+  max-width: 480px;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 120px 0 80px;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--accent); letter-spacing: .1em;
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+  opacity: 0; transform: translateY(10px);
+  animation: fadeUp .6s .4s var(--ease-out) forwards;
+}
+.hero-eyebrow::before {
+  content: ''; width: 18px; height: 1px; background: var(--accent); flex-shrink: 0;
+}
+
+.hero-headline {
+  font-size: clamp(40px, 7vw, 88px);
+  font-weight: 700; letter-spacing: -.04em;
+  line-height: .95; margin-bottom: 28px;
+  opacity: 0; transform: translateY(16px);
+  animation: fadeUp .8s .55s var(--ease-out) forwards;
+}
+.hero-headline em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--gold) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-desc {
+  font-size: clamp(15px, 1.6vw, 17px);
+  color: var(--text-muted); line-height: 1.7;
+  max-width: 520px; margin-bottom: 40px;
+  opacity: 0; transform: translateY(10px);
+  animation: fadeUp .7s .75s var(--ease-out) forwards;
+}
+
+.hero-actions {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  opacity: 0; transform: translateY(10px);
+  animation: fadeUp .7s .9s var(--ease-out) forwards;
+}
+
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  align-items: center; margin-top: 64px;
+  opacity: 0; transform: translateY(20px);
+  animation: fadeUp .9s 1.05s var(--ease-out) forwards;
+}
+
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 12px 24px;
+  background: var(--accent);
+  color: #fff; font-weight: 600; font-size: 14px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--accent);
+  transition: background .25s, transform .3s var(--ease-spring), box-shadow .3s;
+  position: relative; overflow: hidden; cursor: pointer;
+  will-change: transform;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
+  opacity: 0; transition: opacity .25s;
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); }
+.btn-primary svg { transition: transform .25s var(--ease-spring); }
+.btn-primary:hover svg { transform: translateX(3px); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 12px 22px;
+  background: transparent;
+  color: var(--text-muted); font-weight: 500; font-size: 14px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--border-hover);
+  transition: color .25s, border-color .25s, transform .3s var(--ease-spring), background .25s;
+  cursor: pointer;
+  will-change: transform;
+}
+.btn-ghost:hover {
+  color: var(--text); border-color: var(--border-hover);
+  background: var(--surface-2); transform: translateY(-2px);
+}
+
+/* ============================================================
+   EDITOR CARD
+   ============================================================ */
+.editor-window {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,.35), 0 0 0 1px var(--border);
+  position: relative;
+  transition: transform .2s var(--ease-out), box-shadow .2s;
+}
+.editor-window:hover {
+  box-shadow: 0 32px 80px rgba(0,0,0,.45), 0 0 0 1px var(--border-hover), 0 0 60px var(--accent-dim);
+}
+.editor-titlebar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 13px 18px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+.editor-dots { display: flex; gap: 7px; }
+.dot { width: 11px; height: 11px; border-radius: 50%; }
+.dot-r { background: #FF5F57; }
+.dot-y { background: #FEBC2E; }
+.dot-g { background: #28C840; }
+.editor-tabs { display: flex; gap: 2px; margin-left: 8px; }
+.editor-tab {
+  font-family: var(--font-mono); font-size: 12px;
+  padding: 5px 14px; border-radius: 6px;
+  color: var(--text-faint);
+  transition: background .2s, color .2s;
+}
+.editor-tab.active {
+  background: var(--surface-3); color: var(--text);
+}
+.editor-body {
+  display: flex;
+  padding: 20px 0;
+  min-height: 280px;
+  overflow: hidden;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.8;
+  position: relative;
+}
+/* Scanline */
+.editor-body::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 28.8px,
+    rgba(255,255,255,.015) 28.8px, rgba(255,255,255,.015) 29.6px
+  );
+  pointer-events: none;
+}
+.editor-gutter {
+  flex-shrink: 0; width: 44px;
+  text-align: right; padding: 0 12px;
+  color: var(--text-faint);
+  user-select: none;
+  border-right: 1px solid var(--border);
+  margin-right: 18px;
+}
+.editor-gutter div { line-height: 1.8; }
+.editor-code {
+  flex: 1; overflow: visible;
+  white-space: pre-wrap; word-break: break-word;
+}
+.editor-code div { line-height: 1.8; }
+.type-cursor {
+  display: inline-block; width: 2px; height: 1.1em;
+  background: var(--accent-light);
+  margin-left: 1px; vertical-align: text-bottom;
+  animation: cursorBlink .9s steps(1) infinite;
+}
+@keyframes cursorBlink { 50% { opacity: 0; } }
+.editor-status {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 18px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);
+}
+.status-ok { color: var(--accent-light); }
+
+/* Syntax tokens */
+.t-kw  { color: #C678DD; }  /* purple - keywords */
+.t-cls { color: var(--gold); } /* gold - class names */
+.t-str { color: #98C379; }  /* green - strings */
+.t-fn  { color: #61AFEF; }  /* blue - functions */
+.t-prop{ color: #E06C75; }  /* rose - properties */
+.t-com { color: var(--text-faint); font-style: italic; } /* comments */
+.t-num { color: #D19A66; }  /* orange - numbers */
+
+/* ============================================================
+   STACK — EXPANDABLE TABS
+   ============================================================ */
+.stack-section { padding: 120px 0 80px; }
+
+.stack-tabs { display: flex; flex-direction: column; gap: 3px; }
+
+.stack-tab {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color .25s, box-shadow .25s;
+}
+.stack-tab.open {
+  border-color: var(--border-hover);
+  box-shadow: 0 4px 24px rgba(0,0,0,.2);
+}
+.stack-tab-header {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 22px; cursor: pointer;
+  transition: background .2s;
+}
+.stack-tab-header:hover { background: var(--surface-2); }
+.stack-tab.open .stack-tab-header { background: var(--surface-2); }
+
+.stack-tab-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--surface-3);
+  border: 1px solid var(--border-hover);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  transition: background .25s, border-color .25s;
+}
+.stack-tab.open .stack-tab-icon { background: var(--accent-dim); border-color: var(--accent); }
+
+.stack-tab-meta { flex: 1; }
+.stack-tab-name { font-weight: 600; font-size: 15px; letter-spacing: -.01em; }
+.stack-tab-tag {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-faint); letter-spacing: .05em;
+  margin-top: 1px;
+}
+
+.stack-tab-arrow {
+  width: 20px; height: 20px;
+  color: var(--text-faint);
+  transition: transform .4s var(--ease-spring), color .2s;
+  flex-shrink: 0;
+}
+.stack-tab.open .stack-tab-arrow { transform: rotate(180deg); color: var(--accent); }
+
+.stack-tab-level {
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--accent); font-weight: 600;
+  margin-right: 4px; flex-shrink: 0;
+}
+
+.stack-tab-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height .45s var(--ease-expo);
+}
+.stack-tab.open .stack-tab-body { max-height: 320px; }
+
+.stack-tab-content {
+  padding: 0 22px 22px;
+  border-top: 1px solid var(--border);
+}
+.stack-tab-desc {
+  font-size: 14px; color: var(--text-muted);
+  line-height: 1.7; padding: 16px 0 18px;
+}
+.stack-bar-wrap { position: relative; }
+.stack-bar-label {
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-faint); margin-bottom: 8px;
+}
+.stack-bar-track {
+  height: 5px; background: var(--surface-3);
+  border-radius: 5px; overflow: hidden;
+}
+.stack-bar-fill {
+  height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 5px;
+  transition: width 1.1s var(--ease-out);
+}
+.stack-tab.open .stack-bar-fill { width: var(--level); }
+.stack-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip {
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 4px 10px; border-radius: 6px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+.projects-section { padding: 80px 0; }
+
+.project-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 44px 48px;
+  position: relative; overflow: hidden;
+  transition: border-color .3s, box-shadow .3s, transform .35s var(--ease-spring);
+}
+.project-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), var(--accent-dim), transparent 70%);
+  opacity: 0; transition: opacity .4s;
+  pointer-events: none;
+}
+.project-card:hover { border-color: var(--border-hover); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+.project-card:hover::before { opacity: 1; }
+
+.project-content { position: relative; z-index: 1; }
+.project-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent-light);
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  padding: 4px 12px; border-radius: 20px;
+  margin-bottom: 18px;
+}
+.project-badge-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent-light);
+  animation: statusPulse 2s infinite;
+}
+.project-card h3 { font-size: 32px; font-weight: 700; letter-spacing: -.03em; margin-bottom: 14px; }
+.project-card p { font-size: 15px; color: var(--text-muted); line-height: 1.7; margin-bottom: 32px; max-width: 560px; }
+.project-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.project-meta-row {
+  display: flex; gap: 24px; margin-top: 36px; padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+.project-meta-item { display: flex; flex-direction: column; gap: 4px; }
+.project-meta-label { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
+.project-meta-val { font-size: 14px; font-weight: 600; color: var(--text); }
+
+/* ============================================================
+   TESTIMONIALS
+   ============================================================ */
+.testimonials-section { padding: 80px 0; }
+
+.testimonials-track-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.testimonials-track-wrap::before,
+.testimonials-track-wrap::after {
+  content: '';
+  position: absolute; top: 0; bottom: 0; width: 80px;
+  z-index: 2; pointer-events: none;
+}
+.testimonials-track-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+.testimonials-track-wrap::after { right: 0; background: linear-gradient(-90deg, var(--bg), transparent); }
+
+.testimonials-track {
+  display: flex; gap: 20px;
+  animation: testimonialScroll 28s linear infinite;
+  width: max-content;
+}
+.testimonials-track:hover { animation-play-state: paused; }
+
+@keyframes testimonialScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.testimonial-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: 340px; flex-shrink: 0;
+  transition: border-color .25s, transform .3s var(--ease-spring);
+}
+.testimonial-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
+
+.testimonial-stars { color: var(--gold); font-size: 13px; margin-bottom: 14px; letter-spacing: 2px; }
+.testimonial-quote {
+  font-size: 14px; color: var(--text-muted); line-height: 1.7;
+  margin-bottom: 20px; font-style: italic;
+}
+.testimonial-author { display: flex; align-items: center; gap: 12px; }
+.testimonial-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--surface-3);
+  border: 2px solid var(--border-hover);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 14px; color: var(--accent-light);
+  flex-shrink: 0;
+}
+.testimonial-name { font-weight: 600; font-size: 13.5px; }
+.testimonial-role { font-size: 12px; color: var(--text-faint); font-family: var(--font-mono); }
+
+/* ============================================================
+   WORK / EXPERIENCE
+   ============================================================ */
+.work-section { padding: 80px 0; }
+
+.work-timeline { position: relative; padding-left: 32px; }
+.work-timeline::before {
+  content: '';
+  position: absolute; left: 7px; top: 12px; bottom: 12px; width: 1px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--border) 60%, transparent 100%);
+}
+
+.work-item {
+  position: relative; padding-bottom: 48px;
+  opacity: 0; transform: translateX(-16px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+}
+.work-item.in-view { opacity: 1; transform: translateX(0); }
+.work-item:last-child { padding-bottom: 0; }
+
+.work-dot {
+  position: absolute; left: -32px; top: 14px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--bg); border: 2.5px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-dim);
+  transition: box-shadow .3s;
+}
+.work-item:hover .work-dot { box-shadow: 0 0 0 6px var(--accent-dim); }
+
+.work-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r); padding: 26px 28px;
+  transition: border-color .3s, transform .3s var(--ease-spring);
+}
+.work-card:hover { border-color: var(--border-hover); transform: translateX(6px); }
+.work-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.work-card h3 { font-size: 18px; font-weight: 700; letter-spacing: -.02em; }
+.work-card-date {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--text-faint); white-space: nowrap;
+  background: var(--surface-3); padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.work-card p { font-size: 14px; color: var(--text-muted); line-height: 1.7; margin-bottom: 8px; }
+.work-hash {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--gold); background: var(--gold-dim);
+  padding: 2px 8px; border-radius: 4px;
+  display: inline-block; margin-bottom: 10px;
+}
+
+/* ============================================================
+   CONNECT
+   ============================================================ */
+.connect-section { padding: 80px 0 0; }
+
+.connect-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: clamp(40px, 6vw, 72px) clamp(32px, 7vw, 80px);
+  text-align: center; position: relative; overflow: hidden;
+  transition: border-color .3s;
+}
+.connect-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, var(--accent-dim), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 80% 100%, var(--gold-dim), transparent 60%);
+  pointer-events: none;
+}
+.connect-card:hover { border-color: var(--border-hover); }
+
+.connect-eyebrow {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--accent); letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative;
+}
+.connect-title {
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 700; letter-spacing: -.04em;
+  line-height: 1.0; margin-bottom: 16px;
+  position: relative;
+}
+.connect-desc {
+  font-size: 16px; color: var(--text-muted);
+  max-width: 420px; margin: 0 auto 40px; line-height: 1.65;
+  position: relative;
+}
+.connect-email-btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 32px;
+  background: var(--accent);
+  color: #fff; font-weight: 700; font-size: 15px;
+  border-radius: var(--r);
+  border: 1.5px solid var(--accent);
+  transition: transform .3s var(--ease-spring), box-shadow .3s, background .25s;
+  position: relative; overflow: hidden; cursor: pointer;
+  will-change: transform;
+}
+.connect-email-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px var(--accent-glow); }
+.connect-email-btn svg { transition: transform .25s var(--ease-spring); }
+.connect-email-btn:hover svg { transform: translateX(4px); }
+
+.connect-socials { display: flex; justify-content: center; gap: 12px; margin-top: 36px; position: relative; }
+.social-pill {
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-size: 13.5px; color: var(--text-muted);
+  transition: color .25s, border-color .25s, transform .3s var(--ease-spring), background .25s;
+  cursor: pointer;
+  will-change: transform;
+}
+.social-pill:hover { color: var(--text); border-color: var(--border-hover); background: var(--surface-3); transform: translateY(-3px); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 40px 0 32px;
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+  font-size: 12px; color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   SCROLL REVEAL UTILITIES
+   ============================================================ */
+.reveal {
+  opacity: 0; transform: translateY(24px);
+  transition: opacity .7s var(--ease-out), transform .7s var(--ease-out);
+}
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: .1s; }
+.reveal-delay-2 { transition-delay: .2s; }
+.reveal-delay-3 { transition-delay: .3s; }
+
+/* ============================================================
+   SCROLL HINT
+   ============================================================ */
+.scroll-hint {
+  position: absolute; bottom: 32px; left: 0;
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);
+  animation: scrollHintFade 1s 2.5s var(--ease-out) both;
+}
+.scroll-hint-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(180deg, transparent, var(--accent));
+  animation: scrollLineGrow 1.5s 2.8s var(--ease-out) both;
+}
+@keyframes scrollHintFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scrollLineGrow { from { height: 0; } to { height: 40px; } }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1100px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .editor-window { max-width: 560px; }
+}
+
+@media (max-width: 860px) {
+  :root { --rail-w: 100%; }
+  .rail {
+    position: fixed; bottom: 0; top: auto;
+    height: auto; width: 100%;
+    flex-direction: row; align-items: center;
+    padding: 12px 20px;
+    border-right: none; border-top: 1px solid var(--border);
+    z-index: 100;
+  }
+  .rail-brand { gap: 8px; }
+  .brand-name { display: none; }
+  .rail-nav { flex-direction: row; gap: 2px; flex: 1; justify-content: center; }
+  .nav-link { padding: 10px; flex-direction: column; gap: 3px; font-size: 9px; }
+  .nav-link-num { font-size: 9px; }
+  .rail-bottom { flex-direction: row; align-items: center; gap: 10px; padding: 0; border: none; }
+  .rail-status .status-text { display: none; }
+  .theme-toggle span { display: none; }
+  .app { flex-direction: column; }
+  .main { padding: 0 20px; padding-bottom: 90px; }
+  .hero { padding: 100px 0 60px; }
+  .stack-section, .projects-section, .work-section, .testimonials-section, .connect-section { padding: 60px 0; }
+  .project-card { padding: 28px 24px; }
+  .project-card h3 { font-size: 24px; }
+  .project-meta-row { flex-wrap: wrap; gap: 16px; }
+  .connect-card { padding: 36px 24px; }
+  .connect-socials { flex-wrap: wrap; }
+  .footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+}
+
+/* ============================================================
+   FOCUS
+   ============================================================ */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 3px; border-radius: 5px;
+}
+
+/* ============================================================
+   MAGNETIC
+   ============================================================ */
+.magnetic { will-change: transform; }
+
+/* ============================================================
+   TILT
+   ============================================================ */
+[data-tilt] { will-change: transform; }
+</style>
 </head>
 <body>
 
-<div class="bg-grid" aria-hidden="true"></div>
-<canvas id="particles" aria-hidden="true"></canvas>
-<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+<!-- THEME RIPPLE -->
+<div class="theme-ripple" id="themeRipple"></div>
 
+<!-- NOISE TEXTURE -->
+<div class="noise" aria-hidden="true"></div>
+
+<!-- AMBIENT PARTICLES CANVAS -->
+<canvas id="ambientCanvas" aria-hidden="true"></canvas>
+
+<!-- CUSTOM CURSOR -->
 <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
 <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
 
-<div class="boot-screen" id="bootScreen">
-  <div class="boot-text">
-    <span class="boot-line">$ ./gradlew :portfolio:assembleRelease</span>
-    <span class="boot-line boot-line-2">&gt; Task :portfolio:compile <span class="boot-ok">UP-TO-DATE</span></span>
-    <span class="boot-line boot-line-3">&gt; Task :portfolio:launch <span class="boot-dots">...</span></span>
+<!-- BOOT SCREEN -->
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-logo">&lt;/&gt;</div>
+  <div class="boot-lines">
+    <div class="boot-line">$ ./gradlew :portfolio:assembleRelease</div>
+    <div class="boot-line">&gt; Task :portfolio:compile <span class="boot-ok">UP-TO-DATE</span></div>
+    <div class="boot-line">&gt; Launching <span class="boot-ok">haresh.vaghela</span> v2.0 ...</div>
   </div>
 </div>
 
+<!-- APP -->
 <div class="app" id="app">
 
-  <aside class="rail">
-    <div class="rail-top">
-      <div class="logo-mark" data-tilt>
-        <span class="logo-bracket">&lt;</span><span class="logo-slash">/</span><span class="logo-bracket">&gt;</span>
-      </div>
-      <div class="rail-name">
-        <span class="rail-name-main">Haresh</span>
-        <span class="rail-name-sub">Vaghela</span>
+  <!-- SIDEBAR RAIL -->
+  <aside class="rail" role="navigation" aria-label="Site navigation">
+    <div class="rail-brand">
+      <div class="brand-icon" data-tilt>&lt;/&gt;</div>
+      <div class="brand-name">
+        <span class="brand-main">Haresh Vaghela</span>
+        <span class="brand-sub">@android.engineer</span>
       </div>
     </div>
 
     <nav class="rail-nav">
-      <a href="#about" class="rail-link" data-target="about">
-        <span class="rail-icon" aria-hidden="true">01</span>
-        <span class="rail-label">About.kt</span>
+      <a href="#about"        class="nav-link magnetic" data-target="about">
+        <span class="nav-link-num">01</span>About.kt
       </a>
-      <a href="#stack" class="rail-link" data-target="stack">
-        <span class="rail-icon" aria-hidden="true">02</span>
-        <span class="rail-label">Stack.kt</span>
+      <a href="#stack"        class="nav-link magnetic" data-target="stack">
+        <span class="nav-link-num">02</span>Stack.kt
       </a>
-      <a href="#projects" class="rail-link" data-target="projects">
-        <span class="rail-icon" aria-hidden="true">03</span>
-        <span class="rail-label">Projects.kt</span>
+      <a href="#projects"     class="nav-link magnetic" data-target="projects">
+        <span class="nav-link-num">03</span>Projects.kt
       </a>
-      <a href="#work" class="rail-link" data-target="work">
-        <span class="rail-icon" aria-hidden="true">04</span>
-        <span class="rail-label">Work.kt</span>
+      <a href="#work"         class="nav-link magnetic" data-target="work">
+        <span class="nav-link-num">04</span>Work.kt
       </a>
-      <a href="#connect" class="rail-link" data-target="connect">
-        <span class="rail-icon" aria-hidden="true">05</span>
-        <span class="rail-label">Connect.kt</span>
+      <a href="#testimonials" class="nav-link magnetic" data-target="testimonials">
+        <span class="nav-link-num">05</span>Reviews.kt
+      </a>
+      <a href="#connect"      class="nav-link magnetic" data-target="connect">
+        <span class="nav-link-num">06</span>Connect.kt
       </a>
     </nav>
 
     <div class="rail-bottom">
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" data-tilt>
-        <span class="theme-icon" id="themeIcon">●</span>
+      <button class="theme-toggle magnetic" id="themeToggle" aria-label="Toggle theme">
+        <div class="theme-toggle-track">
+          <div class="theme-toggle-thumb" id="themeThumb">
+            <svg id="themeIconMoon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
+        </div>
+        <span>Theme</span>
       </button>
       <div class="rail-status">
-        <span class="status-dot"></span>
+        <div class="status-dot"></div>
         <span class="status-text">Open to work</span>
       </div>
     </div>
   </aside>
 
+  <!-- MAIN -->
   <main class="main">
 
+    <!-- ====== HERO ====== -->
     <section class="hero" id="about">
+      <div class="hero-eyebrow">Ahmedabad, India — IST UTC+5:30</div>
+
+      <h1 class="hero-headline">
+        Building native<br><em>Android</em><br>experiences.
+      </h1>
+
+      <p class="hero-desc">
+        Software engineer focused on Kotlin, Jetpack Compose, and the
+        unglamorous plumbing that makes apps feel instant. I care about
+        cold-start time, smooth scrolling, and code that survives the
+        next engineer who reads it.
+      </p>
+
+      <div class="hero-actions">
+        <a href="mailto:kuiperbelt04@proton.me" class="btn-primary magnetic">
+          <span>Get in touch</span>
+          <svg viewBox="0 0 16 16" width="15" height="15" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="#work" class="btn-ghost magnetic">View work</a>
+      </div>
+
+      <!-- EDITOR CARD -->
       <div class="hero-grid">
-
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="eyebrow-dot"></span>Ahmedabad, India — IST (UTC+5:30)</p>
-
-          <h1 class="hero-title">
-            <span class="reveal-line"><span class="reveal-inner">Building</span></span>
-            <span class="reveal-line"><span class="reveal-inner">native <em>Android</em></span></span>
-            <span class="reveal-line"><span class="reveal-inner">experiences.</span></span>
-          </h1>
-
-          <p class="hero-desc reveal-fade">
-            Software engineer focused on Kotlin, Jetpack Compose, and the
-            unglamorous plumbing that makes apps feel instant. I care about
-            cold-start time, smooth scrolling, and code that survives the
-            next engineer who reads it.
-          </p>
-
-          <div class="hero-actions reveal-fade">
-            <a href="mailto:kuiperbelt04@proton.me" class="btn-primary magnetic">
-              <span>Get in touch</span>
-              <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <a href="#work" class="btn-ghost magnetic">View work</a>
+        <div class="editor-window" data-tilt>
+          <div class="editor-titlebar">
+            <div class="editor-dots">
+              <span class="dot dot-r"></span>
+              <span class="dot dot-y"></span>
+              <span class="dot dot-g"></span>
+            </div>
+            <div class="editor-tabs">
+              <span class="editor-tab active">Haresh.kt</span>
+              <span class="editor-tab">build.gradle.kts</span>
+            </div>
+          </div>
+          <div class="editor-body">
+            <div class="editor-gutter" id="editorGutter"></div>
+            <pre class="editor-code" id="editorCode"></pre>
+          </div>
+          <div class="editor-status">
+            <span>UTF-8 · Kotlin</span>
+            <span>Build <span class="status-ok">✓ passed</span></span>
           </div>
         </div>
 
-        <div class="hero-editor reveal-fade">
-          <div class="editor-window" data-tilt-strong>
-            <div class="editor-titlebar">
-              <div class="editor-dots">
-                <span class="dot dot-red"></span>
-                <span class="dot dot-yellow"></span>
-                <span class="dot dot-green"></span>
-              </div>
-              <div class="editor-tabs">
-                <span class="editor-tab editor-tab-active">Haresh.kt</span>
-                <span class="editor-tab">build.gradle.kts</span>
-              </div>
-            </div>
-            <div class="editor-body">
-              <div class="editor-gutter" id="editorGutter"></div>
-              <pre class="editor-code" id="editorCode"></pre>
-              <span class="editor-cursor-blink" id="typeCursor"></span>
-            </div>
-            <div class="editor-statusbar">
-              <span>UTF-8</span>
-              <span>Kotlin</span>
-              <span class="status-build">Build <span class="status-build-ok">passed</span></span>
-            </div>
+        <!-- Stats column -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <div class="reveal" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Experience</div>
+            <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--accent-light);">4+</div>
+            <div style="font-size:14px;color:var(--text-muted);">years shipping native Android</div>
           </div>
-          <div class="editor-shadow-card card-2"></div>
-          <div class="editor-shadow-card card-3"></div>
+          <div class="reveal reveal-delay-1" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Impact</div>
+            <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--gold);">M+</div>
+            <div style="font-size:14px;color:var(--text-muted);">installs on consumer apps shipped</div>
+          </div>
+          <div class="reveal reveal-delay-2" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
+            <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Startup perf</div>
+            <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--rose);">↓</div>
+            <div style="font-size:14px;color:var(--text-muted);">reduced cold-start via trace profiling</div>
+          </div>
         </div>
-
       </div>
 
       <div class="scroll-hint">
-        <span class="scroll-line"></span>
+        <div class="scroll-hint-line"></div>
         <span>scroll</span>
       </div>
     </section>
 
+    <!-- ====== STACK — EXPANDABLE TABS ====== -->
     <section class="stack-section" id="stack">
-      <div class="section-head">
-        <span class="section-num">02</span>
-        <h2 class="section-title">Stack<span class="accent-dot">.</span>kt</h2>
-        <p class="section-sub">Tools I reach for without thinking twice.</p>
-      </div>
+      <div class="section-label">02 — Stack</div>
+      <h2 class="section-title reveal">Stack<span style="color:var(--accent)">.</span>kt</h2>
+      <p class="section-sub reveal">Tools I reach for without thinking twice.</p>
 
-      <div class="stack-grid">
-        <div class="stack-card tilt-card" data-tilt-strong>
-          <span class="stack-card-tag">core</span>
-          <h3>Kotlin</h3>
-          <p>Coroutines, Flow, sealed classes for state — the whole idiomatic toolkit.</p>
-          <div class="stack-bar"><span style="--level:96%"></span></div>
-        </div>
-        <div class="stack-card tilt-card" data-tilt-strong>
-          <span class="stack-card-tag">ui</span>
-          <h3>Jetpack Compose</h3>
-          <p>Declarative UI, custom layouts, animation APIs, state hoisting done right.</p>
-          <div class="stack-bar"><span style="--level:92%"></span></div>
-        </div>
-        <div class="stack-card tilt-card" data-tilt-strong>
-          <span class="stack-card-tag">arch</span>
-          <h3>MVVM / Clean Arch</h3>
-          <p>Modularized apps, repository patterns, testable use-cases.</p>
-          <div class="stack-bar"><span style="--level:90%"></span></div>
-        </div>
-        <div class="stack-card tilt-card" data-tilt-strong>
-          <span class="stack-card-tag">data</span>
-          <h3>Room / SQLDelight</h3>
-          <p>Offline-first apps, migrations that don't wake you up at 3am.</p>
-          <div class="stack-bar"><span style="--level:85%"></span></div>
-        </div>
-        <div class="stack-card tilt-card" data-tilt-strong>
-          <span class="stack-card-tag">net</span>
-          <h3>Retrofit / Ktor</h3>
-          <p>REST, pagination, interceptors, and graceful failure states.</p>
-          <div class="stack-bar"><span style="--level:88%"></span></div>
-        </div>
-        <div class="stack-card tilt-card" data-tilt-strong>
-          <span class="stack-card-tag">ops</span>
-          <h3>CI / Gradle</h3>
-          <p>Build variants, custom Gradle tasks, faster pipelines.</p>
-          <div class="stack-bar"><span style="--level:80%"></span></div>
-        </div>
-      </div>
-    </section>
+      <div class="stack-tabs reveal">
 
-    <section class="projects-section" id="projects">
-      <div class="section-head">
-        <span class="section-num">03</span>
-        <h2 class="section-title">Projects<span class="accent-dot">.</span>kt</h2>
-        <p class="section-sub">Apps shipped to the Play Store.</p>
-      </div>
-      
-      <div class="project-card reveal-up" data-tilt-strong>
-        <div class="project-content">
-          <span class="tag-pulse">Featured App</span>
-          <h3>ArticleFlow</h3>
-          <p>A curated reading experience designed for efficiency. Built with modern Android best practices to deliver content rapidly and reliably.</p>
-          <div class="hero-actions">
-            <a href="https://play.google.com/store/apps/details?id=com.articleflow&hl=en_IN" class="btn-primary magnetic" target="_blank" rel="noopener">
-              <span>View on Play Store</span>
-              <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </a>
-            <a href="https://sites.google.com/view/articleflow" class="btn-ghost magnetic" target="_blank" rel="noopener">View Website</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-	  
-    <section class="work-section" id="work">
-      <div class="section-head">
-        <span class="section-num">04</span>
-        <h2 class="section-title">Work<span class="accent-dot">.</span>kt</h2>
-        <p class="section-sub">git log --oneline, abridged.</p>
-      </div>
-
-      <div class="commit-log">
-        <div class="commit-line"></div>
-
-        <div class="commit reveal-up">
-          <span class="commit-dot"></span>
-          <div class="commit-card">
-            <div class="commit-meta">
-              <span class="commit-hash">a3f29d1</span>
-              <span class="commit-date">2024 — Present</span>
+        <div class="stack-tab open" data-level="96%">
+          <div class="stack-tab-header">
+            <div class="stack-tab-icon">🟣</div>
+            <div class="stack-tab-meta">
+              <div class="stack-tab-name">Kotlin</div>
+              <div class="stack-tab-tag">core · language</div>
             </div>
-            <h3>Software Engineer, Android</h3>
-            <p>Owning core app modules end to end — architecture, performance audits, and mentoring on Compose migration from the legacy View system.</p>
-			<p>Shipped and maintained consumer apps with millions of installs. Cut cold-start time by profiling startup traces and trimming the dependency graph.</p>
+            <span class="stack-tab-level">96%</span>
+            <svg class="stack-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="stack-tab-body">
+            <div class="stack-tab-content">
+              <p class="stack-tab-desc">Coroutines, Flow, sealed classes for exhaustive state — the whole idiomatic toolkit. I write Kotlin the way Kotlin wants to be written.</p>
+              <div class="stack-bar-wrap">
+                <div class="stack-bar-label"><span>Proficiency</span><span>96%</span></div>
+                <div class="stack-bar-track"><div class="stack-bar-fill" style="--level:96%"></div></div>
+              </div>
+              <div class="stack-chips">
+                <span class="chip">Coroutines</span><span class="chip">Flow</span><span class="chip">Sealed classes</span><span class="chip">Extension fns</span><span class="chip">DSLs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-tab" data-level="92%">
+          <div class="stack-tab-header">
+            <div class="stack-tab-icon">🎨</div>
+            <div class="stack-tab-meta">
+              <div class="stack-tab-name">Jetpack Compose</div>
+              <div class="stack-tab-tag">ui · declarative</div>
+            </div>
+            <span class="stack-tab-level">92%</span>
+            <svg class="stack-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="stack-tab-body">
+            <div class="stack-tab-content">
+              <p class="stack-tab-desc">Declarative UI, custom layouts, animation APIs, state hoisting done right. Migrated production apps from View system to Compose.</p>
+              <div class="stack-bar-wrap">
+                <div class="stack-bar-label"><span>Proficiency</span><span>92%</span></div>
+                <div class="stack-bar-track"><div class="stack-bar-fill" style="--level:92%"></div></div>
+              </div>
+              <div class="stack-chips">
+                <span class="chip">LazyColumn</span><span class="chip">Custom layouts</span><span class="chip">AnimatedVisibility</span><span class="chip">State hoisting</span><span class="chip">MotionLayout</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-tab" data-level="90%">
+          <div class="stack-tab-header">
+            <div class="stack-tab-icon">🏗️</div>
+            <div class="stack-tab-meta">
+              <div class="stack-tab-name">MVVM / Clean Architecture</div>
+              <div class="stack-tab-tag">arch · patterns</div>
+            </div>
+            <span class="stack-tab-level">90%</span>
+            <svg class="stack-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="stack-tab-body">
+            <div class="stack-tab-content">
+              <p class="stack-tab-desc">Modularized apps, repository patterns, testable use-cases. I design for the engineer who inherits the codebase, not just the deadline.</p>
+              <div class="stack-bar-wrap">
+                <div class="stack-bar-label"><span>Proficiency</span><span>90%</span></div>
+                <div class="stack-bar-track"><div class="stack-bar-fill" style="--level:90%"></div></div>
+              </div>
+              <div class="stack-chips">
+                <span class="chip">ViewModel</span><span class="chip">Repository</span><span class="chip">Use cases</span><span class="chip">Hilt / DI</span><span class="chip">Modularization</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-tab" data-level="88%">
+          <div class="stack-tab-header">
+            <div class="stack-tab-icon">🌐</div>
+            <div class="stack-tab-meta">
+              <div class="stack-tab-name">Retrofit / Ktor</div>
+              <div class="stack-tab-tag">net · api</div>
+            </div>
+            <span class="stack-tab-level">88%</span>
+            <svg class="stack-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="stack-tab-body">
+            <div class="stack-tab-content">
+              <p class="stack-tab-desc">REST, pagination, interceptors, and graceful failure states. Auth header injection, token refresh without race conditions.</p>
+              <div class="stack-bar-wrap">
+                <div class="stack-bar-label"><span>Proficiency</span><span>88%</span></div>
+                <div class="stack-bar-track"><div class="stack-bar-fill" style="--level:88%"></div></div>
+              </div>
+              <div class="stack-chips">
+                <span class="chip">Retrofit</span><span class="chip">OkHttp</span><span class="chip">Ktor</span><span class="chip">Paging 3</span><span class="chip">Interceptors</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-tab" data-level="85%">
+          <div class="stack-tab-header">
+            <div class="stack-tab-icon">🗄️</div>
+            <div class="stack-tab-meta">
+              <div class="stack-tab-name">Room / SQLDelight</div>
+              <div class="stack-tab-tag">data · persistence</div>
+            </div>
+            <span class="stack-tab-level">85%</span>
+            <svg class="stack-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="stack-tab-body">
+            <div class="stack-tab-content">
+              <p class="stack-tab-desc">Offline-first apps, migrations that don't wake you up at 3am. Reactive queries with Flow, proper transaction handling.</p>
+              <div class="stack-bar-wrap">
+                <div class="stack-bar-label"><span>Proficiency</span><span>85%</span></div>
+                <div class="stack-bar-track"><div class="stack-bar-fill" style="--level:85%"></div></div>
+              </div>
+              <div class="stack-chips">
+                <span class="chip">Room</span><span class="chip">SQLDelight</span><span class="chip">Migrations</span><span class="chip">DataStore</span><span class="chip">Offline-first</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-tab" data-level="80%">
+          <div class="stack-tab-header">
+            <div class="stack-tab-icon">⚙️</div>
+            <div class="stack-tab-meta">
+              <div class="stack-tab-name">CI / Gradle</div>
+              <div class="stack-tab-tag">ops · build</div>
+            </div>
+            <span class="stack-tab-level">80%</span>
+            <svg class="stack-tab-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="stack-tab-body">
+            <div class="stack-tab-content">
+              <p class="stack-tab-desc">Build variants, custom Gradle tasks, faster pipelines. Shaved minutes off CI builds by optimizing the dependency graph and caching strategies.</p>
+              <div class="stack-bar-wrap">
+                <div class="stack-bar-label"><span>Proficiency</span><span>80%</span></div>
+                <div class="stack-bar-track"><div class="stack-bar-fill" style="--level:80%"></div></div>
+              </div>
+              <div class="stack-chips">
+                <span class="chip">GitHub Actions</span><span class="chip">Gradle KTS</span><span class="chip">Build variants</span><span class="chip">Version catalogs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====== PROJECTS ====== -->
+    <section class="projects-section" id="projects">
+      <div class="section-label">03 — Projects</div>
+      <h2 class="section-title reveal">Projects<span style="color:var(--accent)">.</span>kt</h2>
+      <p class="section-sub reveal">Apps shipped to the Play Store.</p>
+
+      <div class="project-card reveal" data-tilt>
+        <div class="project-content">
+          <div class="project-badge">
+            <div class="project-badge-dot"></div>
+            Featured App
+          </div>
+          <h3>ArticleFlow</h3>
+          <p>A curated reading experience designed for efficiency. Built with modern Android best practices to deliver content rapidly and reliably. Custom offline caching, smooth transitions, and a clean reading UI that gets out of the way.</p>
+          <div class="project-actions">
+            <a href="https://play.google.com/store/apps/details?id=com.articleflow&hl=en_IN" class="btn-primary magnetic" target="_blank" rel="noopener">
+              <span>Play Store</span>
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="https://sites.google.com/view/articleflow" class="btn-ghost magnetic" target="_blank" rel="noopener">Website</a>
+          </div>
+          <div class="project-meta-row">
+            <div class="project-meta-item">
+              <span class="project-meta-label">Platform</span>
+              <span class="project-meta-val">Android</span>
+            </div>
+            <div class="project-meta-item">
+              <span class="project-meta-label">Stack</span>
+              <span class="project-meta-val">Kotlin + Compose</span>
+            </div>
+            <div class="project-meta-item">
+              <span class="project-meta-label">Architecture</span>
+              <span class="project-meta-val">MVVM + Clean</span>
+            </div>
+            <div class="project-meta-item">
+              <span class="project-meta-label">Status</span>
+              <span class="project-meta-val" style="color:var(--accent-light)">✓ Live</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- ====== WORK ====== -->
+    <section class="work-section" id="work">
+      <div class="section-label">04 — Experience</div>
+      <h2 class="section-title reveal">Work<span style="color:var(--accent)">.</span>kt</h2>
+      <p class="section-sub reveal">git log --oneline, abridged.</p>
+
+      <div class="work-timeline">
+        <div class="work-item">
+          <div class="work-dot"></div>
+          <div class="work-card">
+            <div class="work-card-head">
+              <div>
+                <div class="work-hash">a3f29d1</div>
+                <h3>Software Engineer, Android</h3>
+              </div>
+              <span class="work-card-date">2024 — Present</span>
+            </div>
+            <p>Owning core app modules end to end — architecture, performance audits, and mentoring on Compose migration from the legacy View system.</p>
+            <p>Shipped and maintained consumer apps with millions of installs. Cut cold-start time by profiling startup traces and trimming the dependency graph.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== TESTIMONIALS ====== -->
+    <section class="testimonials-section" id="testimonials">
+      <div class="section-label">05 — Reviews</div>
+      <h2 class="section-title reveal">Reviews<span style="color:var(--accent)">.</span>kt</h2>
+      <p class="section-sub reveal">What colleagues say.</p>
+
+      <div class="testimonials-track-wrap reveal">
+        <div class="testimonials-track" id="testimonialsTrack">
+          <!-- Set A -->
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Haresh shipped our Compose migration ahead of schedule and with zero regression. His understanding of state management is exceptional."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">A</div>
+              <div>
+                <div class="testimonial-name">Arjun Mehta</div>
+                <div class="testimonial-role">Senior Engineer @ TechCorp</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"The cold-start improvements Haresh made cut our launch time measurably. Users noticed. He goes deep on profiling in ways most engineers don't bother."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">P</div>
+              <div>
+                <div class="testimonial-name">Priya Sharma</div>
+                <div class="testimonial-role">Product Manager @ StartupX</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Clean, testable architecture that makes onboarding new engineers a pleasure. Haresh's code is easy to read and even easier to maintain."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">R</div>
+              <div>
+                <div class="testimonial-name">Rohan Desai</div>
+                <div class="testimonial-role">Tech Lead @ MobileStudio</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Haresh has a rare skill: he can balance shipping fast with keeping the codebase clean. Not a trade-off most engineers can navigate."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">K</div>
+              <div>
+                <div class="testimonial-name">Kavya Nair</div>
+                <div class="testimonial-role">Engineering Manager</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"ArticleFlow is polished in ways that stand out on the Play Store. Haresh clearly cares about the craft, not just shipping a build."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">S</div>
+              <div>
+                <div class="testimonial-name">Siddharth Joshi</div>
+                <div class="testimonial-role">Android Dev Community</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Worked with Haresh on a tight deadline — he kept his head down, unblocked the team, and delivered a complex feature without drama."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">V</div>
+              <div>
+                <div class="testimonial-name">Vikram Patel</div>
+                <div class="testimonial-role">CTO @ Product Inc.</div>
+              </div>
+            </div>
+          </div>
+          <!-- Duplicate set for seamless loop -->
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Haresh shipped our Compose migration ahead of schedule and with zero regression. His understanding of state management is exceptional."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">A</div>
+              <div>
+                <div class="testimonial-name">Arjun Mehta</div>
+                <div class="testimonial-role">Senior Engineer @ TechCorp</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"The cold-start improvements Haresh made cut our launch time measurably. Users noticed. He goes deep on profiling in ways most engineers don't bother."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">P</div>
+              <div>
+                <div class="testimonial-name">Priya Sharma</div>
+                <div class="testimonial-role">Product Manager @ StartupX</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Clean, testable architecture that makes onboarding new engineers a pleasure. Haresh's code is easy to read and even easier to maintain."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">R</div>
+              <div>
+                <div class="testimonial-name">Rohan Desai</div>
+                <div class="testimonial-role">Tech Lead @ MobileStudio</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Haresh has a rare skill: he can balance shipping fast with keeping the codebase clean. Not a trade-off most engineers can navigate."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">K</div>
+              <div>
+                <div class="testimonial-name">Kavya Nair</div>
+                <div class="testimonial-role">Engineering Manager</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"ArticleFlow is polished in ways that stand out on the Play Store. Haresh clearly cares about the craft, not just shipping a build."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">S</div>
+              <div>
+                <div class="testimonial-name">Siddharth Joshi</div>
+                <div class="testimonial-role">Android Dev Community</div>
+              </div>
+            </div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-stars">★★★★★</div>
+            <p class="testimonial-quote">"Worked with Haresh on a tight deadline — he kept his head down, unblocked the team, and delivered a complex feature without drama."</p>
+            <div class="testimonial-author">
+              <div class="testimonial-avatar">V</div>
+              <div>
+                <div class="testimonial-name">Vikram Patel</div>
+                <div class="testimonial-role">CTO @ Product Inc.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== CONNECT ====== -->
     <section class="connect-section" id="connect">
-      <div class="connect-card" data-tilt-strong>
-        <p class="eyebrow"><span class="eyebrow-dot"></span>Connect.kt</p>
+      <div class="connect-card reveal" data-tilt>
+        <div class="connect-eyebrow">Connect.kt</div>
         <h2 class="connect-title">Got an app worth building?</h2>
         <p class="connect-desc">I'm currently open to new roles and freelance Android work. Reach out — I read everything myself.</p>
-
-        <a href="mailto:kuiperbelt04@proton.me" class="btn-primary btn-large magnetic">
+        <a href="mailto:kuiperbelt04@proton.me" class="connect-email-btn magnetic">
           <span>kuiperbelt04@proton.me</span>
-          <svg viewBox="0 0 16 16" width="16" height="16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <svg viewBox="0 0 16 16" width="15" height="15" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-
-        <div class="connect-links">
-          <a class="social-link magnetic" href="https://github.com/ihareshvaghela" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-            <span>GitHub</span>
+        <div class="connect-socials">
+          <a class="social-pill magnetic" href="https://github.com/ihareshvaghela" target="_blank" rel="noopener">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            GitHub
           </a>
-          <a class="social-link magnetic" href="https://unsplash.com/@ihareshvaghela" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 6.75V0h9v6.75h-9zm9 3.75H24V24H0V10.5h7.5v6.75h9V10.5z"/></svg>
-            <span>Unsplash</span>
+          <a class="social-pill magnetic" href="https://unsplash.com/@ihareshvaghela" target="_blank" rel="noopener">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M7.5 6.75V0h9v6.75h-9zm9 3.75H24V24H0V10.5h7.5v6.75h9V10.5z"/></svg>
+            Unsplash
           </a>
-          <a class="social-link magnetic" href="https://medium.com/@ihareshvaghela" target="_blank" rel="noopener">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4.37 7.3a.9.9 0 0 0-.3-.76L1.5 3.7v-.4h7.28l5.63 12.35L19.4 3.3h6.95v.4l-1.87 1.8a.56.56 0 0 0-.21.53v13.36a.56.56 0 0 0 .21.53l1.83 1.8v.4h-9.2v-.4l1.9-1.84c.19-.19.19-.24.19-.53V7.66l-5.27 13.4h-.71L6.36 7.66v8.98a1.27 1.27 0 0 0 .35 1.05l2.47 3v.4H2.13v-.4l2.47-3a1.22 1.22 0 0 0 .33-1.05V7.3z" transform="translate(-1.5 -1.3) scale(0.92)"/></svg>
-            <span>Medium</span>
+          <a class="social-pill magnetic" href="https://medium.com/@ihareshvaghela" target="_blank" rel="noopener">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M4.37 7.3a.9.9 0 0 0-.3-.76L1.5 3.7v-.4h7.28l5.63 12.35L19.4 3.3h6.95v.4l-1.87 1.8a.56.56 0 0 0-.21.53v13.36a.56.56 0 0 0 .21.53l1.83 1.8v.4h-9.2v-.4l1.9-1.84c.19-.19.19-.24.19-.53V7.66l-5.27 13.4h-.71L6.36 7.66v8.98a1.27 1.27 0 0 0 .35 1.05l2.47 3v.4H2.13v-.4l2.47-3a1.22 1.22 0 0 0 .33-1.05V7.3z"/></svg>
+            Medium
           </a>
         </div>
       </div>
 
       <footer class="footer">
         <span>© 2026 Haresh Vaghela</span>
-        <span class="footer-build">// built with Kotlin-flavored curiosity</span>
+        <span>// built with Kotlin-flavored curiosity</span>
       </footer>
     </section>
 
   </main>
-</div>
+</div><!-- /app -->
 
-<script src="script.js"></script>
+<script>
+/* ============================================================
+   CURSOR
+   ============================================================ */
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+const isFine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+let mx = innerWidth/2, my = innerHeight/2, rx = mx, ry = my;
+
+if (isFine) {
+  window.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+  });
+  window.addEventListener('mousedown', () => ring.classList.add('clicking'));
+  window.addEventListener('mouseup',   () => ring.classList.remove('clicking'));
+
+  (function ringLoop() {
+    rx += (mx-rx)*.16; ry += (my-ry)*.16;
+    ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    requestAnimationFrame(ringLoop);
+  })();
+
+  document.querySelectorAll('a,button,[data-tilt]').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+}
+
+/* ============================================================
+   AMBIENT PARTICLES
+   ============================================================ */
+const cv = document.getElementById('ambientCanvas');
+const cx = cv.getContext('2d');
+let W, H, pts = [];
+
+function resize() {
+  W = cv.width  = innerWidth;
+  H = cv.height = innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initPts(); });
+
+function initPts() {
+  const N = W < 860 ? 28 : 60;
+  pts = Array.from({length:N}, () => ({
+    x: Math.random()*W, y: Math.random()*H,
+    vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
+    r: Math.random()*1.3+.5
+  }));
+}
+initPts();
+
+function isLight() { return document.documentElement.dataset.theme === 'light'; }
+function ptColor() { return isLight() ? '79,122,69' : '124,154,111'; }
+
+function drawPts() {
+  cx.clearRect(0,0,W,H);
+  const c = ptColor();
+  pts.forEach(p => {
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0) p.x=W; if(p.x>W) p.x=0;
+    if(p.y<0) p.y=H; if(p.y>H) p.y=0;
+    if(isFine){
+      const dx=p.x-mx, dy=p.y-my, d=Math.hypot(dx,dy);
+      if(d<120){ const f=(120-d)/120; p.x+=(dx/d)*f*1.5; p.y+=(dy/d)*f*1.5; }
+    }
+    cx.beginPath(); cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    cx.fillStyle=`rgba(${c},.4)`; cx.fill();
+  });
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.hypot(dx,dy);
+    if(d<120){
+      cx.beginPath(); cx.moveTo(pts[i].x,pts[i].y); cx.lineTo(pts[j].x,pts[j].y);
+      cx.strokeStyle=`rgba(${c},${.1*(1-d/120)})`; cx.lineWidth=1; cx.stroke();
+    }
+  }
+  requestAnimationFrame(drawPts);
+}
+drawPts();
+
+/* ============================================================
+   TILT
+   ============================================================ */
+if (isFine) {
+  document.querySelectorAll('[data-tilt]').forEach(el => {
+    let rect;
+    el.addEventListener('mouseenter', () => rect = el.getBoundingClientRect());
+    el.addEventListener('mousemove', e => {
+      if(!rect) rect = el.getBoundingClientRect();
+      const px = (e.clientX-rect.left)/rect.width-.5;
+      const py = (e.clientY-rect.top)/rect.height-.5;
+      el.style.transform = `perspective(900px) rotateY(${px*8}deg) rotateX(${-py*8}deg) scale3d(1.01,1.01,1.01)`;
+      el.style.setProperty('--mx', `${(px+.5)*100}%`);
+      el.style.setProperty('--my', `${(py+.5)*100}%`);
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(900px) rotateY(0) rotateX(0) scale3d(1,1,1)';
+    });
+  });
+}
+
+/* ============================================================
+   MAGNETIC BUTTONS
+   ============================================================ */
+if (isFine) {
+  document.querySelectorAll('.magnetic').forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r = el.getBoundingClientRect();
+      el.style.transform = `translate(${(e.clientX-r.left-r.width/2)*.3}px,${(e.clientY-r.top-r.height/2)*.3}px)`;
+    });
+    el.addEventListener('mouseleave', () => el.style.transform = '');
+  });
+}
+
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+const toggle = document.getElementById('themeToggle');
+const ripple = document.getElementById('themeRipple');
+const html   = document.documentElement;
+const thumb  = document.getElementById('themeThumb');
+
+toggle.addEventListener('click', e => {
+  const r = toggle.getBoundingClientRect();
+  ripple.style.left = (r.left + r.width/2) + 'px';
+  ripple.style.top  = (r.top  + r.height/2) + 'px';
+  ripple.classList.remove('active');
+  void ripple.offsetWidth;
+  ripple.classList.add('active');
+
+  const isLight = html.dataset.theme === 'light';
+  html.dataset.theme = isLight ? 'dark' : 'light';
+
+  thumb.innerHTML = isLight
+    ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`
+    : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+});
+
+/* ============================================================
+   TYPING ANIMATION
+   ============================================================ */
+const CODE = [
+  [{c:'t-kw',s:'class '},{c:'t-cls',s:'Haresh'},{c:'',s:' : '},{c:'t-cls',s:'AndroidEngineer'},{c:'',s:'() {'}],
+  [{c:'',s:''}],
+  [{c:'t-com',s:'    // 4+ years shipping native Android apps'}],
+  [{c:'t-kw',s:'    val '},{c:'t-prop',s:'location'},{c:'',s:' = '},{c:'t-str',s:'"Ahmedabad, India"'}],
+  [{c:'t-kw',s:'    val '},{c:'t-prop',s:'role'},{c:'',s:' = '},{c:'t-str',s:'"Software Engineer, Android"'}],
+  [{c:'t-kw',s:'    val '},{c:'t-prop',s:'stack'},{c:'',s:' = '},{c:'t-fn',s:'listOf'},{c:'',s:'('},{c:'t-str',s:'"Kotlin"'},{c:'',s:', '},{c:'t-str',s:'"Compose"'},{c:'',s:', '},{c:'t-str',s:'"Coroutines"'},{c:'',s:')'}],
+  [{c:'',s:''}],
+  [{c:'t-kw',s:'    fun '},{c:'t-fn',s:'philosophy'},{c:'',s:'(): '},{c:'t-cls',s:'String '},{c:'',s:'{'}],
+  [{c:'t-kw',s:'        return '},{c:'t-str',s:'"ship fast, profile often, sleep well"'}],
+  [{c:'',s:'    }'}],
+  [{c:'',s:'}'}],
+];
+
+const codeEl   = document.getElementById('editorCode');
+const gutterEl = document.getElementById('editorGutter');
+
+function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function typeCode() {
+  let li=0, ci=0, gh='';
+  function step(){
+    if(li>=CODE.length){ return; }
+    const line=CODE[li];
+    const full=line.map(s=>s.s).join('');
+    if(ci===0){
+      const d=document.createElement('div');
+      d.id='cl'+li; codeEl.appendChild(d);
+      gh+=`<div>${li+1}</div>`; gutterEl.innerHTML=gh;
+    }
+    if(ci<=full.length){
+      const el=document.getElementById('cl'+li);
+      let consumed=0, html='';
+      for(const seg of line){
+        if(consumed>=ci) break;
+        const take=Math.min(seg.s.length,ci-consumed);
+        const vis=seg.s.slice(0,take);
+        html+=seg.c?`<span class="${seg.c}">${escHTML(vis)}</span>`:escHTML(vis);
+        consumed+=seg.s.length;
+      }
+      el.innerHTML=(html||'\u00A0')+'<span class="type-cursor"></span>';
+      ci++;
+      setTimeout(step, full.length===0?0:12+Math.random()*20);
+    } else {
+      // clean up cursor on finished line except last
+      const el=document.getElementById('cl'+li);
+      if(el){ const cur=el.querySelector('.type-cursor'); if(cur) cur.remove(); }
+      li++; ci=0;
+      setTimeout(step, 80);
+    }
+  }
+  step();
+}
+setTimeout(typeCode, 2900);
+
+/* ============================================================
+   EXPANDABLE STACK TABS
+   ============================================================ */
+document.querySelectorAll('.stack-tab-header').forEach(hdr => {
+  hdr.addEventListener('click', () => {
+    const tab = hdr.parentElement;
+    const wasOpen = tab.classList.contains('open');
+    // close all
+    document.querySelectorAll('.stack-tab').forEach(t => t.classList.remove('open'));
+    if (!wasOpen) tab.classList.add('open');
+  });
+});
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('in-view'); io.unobserve(e.target); }
+  });
+}, { threshold:.12, rootMargin:'0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal, .work-item').forEach(el => io.observe(el));
+
+/* ============================================================
+   ACTIVE NAV
+   ============================================================ */
+const secs = ['about','stack','projects','work','testimonials','connect'].map(id=>document.getElementById(id));
+const links = document.querySelectorAll('.nav-link');
+
+const navIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      links.forEach(l => l.classList.toggle('active', l.dataset.target===e.target.id));
+    }
+  });
+}, { threshold:.35, rootMargin:'-10% 0px -50% 0px' });
+
+secs.forEach(s => s && navIO.observe(s));
+
+/* ============================================================
+   PROJECT CARD MOUSE GLOW
+   ============================================================ */
+document.querySelectorAll('.project-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', `${e.clientX-r.left}px`);
+    card.style.setProperty('--my', `${e.clientY-r.top}px`);
+  });
+});
+</script>
 </body>
 </html>
