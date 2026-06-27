@@ -964,9 +964,181 @@ a:focus-visible, button:focus-visible {
    TILT
    ============================================================ */
 [data-tilt] { will-change: transform; }
+
+/* ============================================================
+   STAT CARDS
+   ============================================================ */
+.stat-card {
+  cursor: default;
+  transition: border-color .3s, transform .35s var(--ease-spring), box-shadow .3s;
+}
+.stat-card:hover {
+  border-color: var(--border-hover) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+}
+
+/* ============================================================
+   SECTION DIVIDER
+   ============================================================ */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 0;
+  opacity: .6;
+}
+
+/* ============================================================
+   SMOOTH SECTION ENTRY
+   ============================================================ */
+section { position: relative; }
+
+/* ============================================================
+   CORNER ACCENTS ON CONNECT CARD
+   ============================================================ */
+.connect-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), var(--accent-dim), transparent 70%);
+  opacity: 0; transition: opacity .4s;
+  pointer-events: none;
+}
+.connect-card:hover::after { opacity: 1; }
+
+/* ============================================================
+   HERO GRADIENT FADE-IN BACKGROUND
+   ============================================================ */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px; left: -10%; width: 60%; height: 700px;
+  background: radial-gradient(ellipse 80% 60% at 30% 30%, var(--accent-dim), transparent 70%);
+  pointer-events: none; z-index: -1;
+  animation: heroGlowPulse 8s ease-in-out infinite alternate;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0; right: -5%; width: 50%; height: 600px;
+  background: radial-gradient(ellipse 60% 50% at 70% 20%, var(--gold-dim), transparent 70%);
+  pointer-events: none; z-index: -1;
+  animation: heroGlowPulse 10s 2s ease-in-out infinite alternate-reverse;
+}
+@keyframes heroGlowPulse {
+  from { opacity: .7; transform: scale(1); }
+  to   { opacity: 1;  transform: scale(1.08); }
+}
+
+/* ============================================================
+   KEYBOARD FOCUS
+   ============================================================ */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent-light);
+  outline-offset: 3px; border-radius: 5px;
+}
+
+/* ============================================================
+   WORK TIMELINE — skill tags
+   ============================================================ */
+.work-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+.work-tag {
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 3px 9px; border-radius: 5px;
+  background: var(--surface-3); border: 1px solid var(--border);
+  color: var(--text-faint);
+}
+
+/* ============================================================
+   STACK TAB — animated indicator bar
+   ============================================================ */
+.stack-tab-header { user-select: none; }
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px; z-index: 9997;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform .05s linear;
+}
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+.back-top {
+  position: fixed; bottom: 28px; right: 28px; z-index: 500;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-hover);
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity .3s, transform .3s var(--ease-spring), color .25s, border-color .25s, background .25s;
+  will-change: transform;
+}
+.back-top.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+.back-top:hover { color: var(--text); border-color: var(--accent); background: var(--surface-3); }
+
+@media (max-width: 860px) {
+  .back-top { bottom: 100px; }
+}
+
+/* ============================================================
+   SECTION LABEL ANIMATION
+   ============================================================ */
+.section-label {
+  opacity: 0; transform: translateY(8px);
+  animation: none;
+}
+.section-label.in-view { opacity: 1; transform: translateY(0); transition: opacity .5s var(--ease-out), transform .5s var(--ease-out); }
+
+/* ============================================================
+   CONNECT CARD MOUSE GLOW (override ::before with ::after)
+   ============================================================ */
+/* already handled above */
+
+/* ============================================================
+   HERO HEADLINE WORD HIGHLIGHT FLICKER
+   ============================================================ */
+.hero-headline em::after {
+  content: '';
+  position: absolute; inset: -2px -4px;
+  background: var(--accent-dim);
+  border-radius: 6px;
+  z-index: -1;
+  animation: emFlicker 4s 2s ease-in-out infinite;
+}
+.hero-headline em { position: relative; }
+@keyframes emFlicker {
+  0%,100% { opacity: 0; }
+  50%      { opacity: 1; }
+}
+
+/* ============================================================
+   LOADING SKELETON SHIMMER (for testimonials before paint)
+   ============================================================ */
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position:  400px 0; }
+}
 </style>
 </head>
 <body>
+
+<!-- SCROLL PROGRESS -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="backTop" aria-label="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
 
 <!-- THEME RIPPLE -->
 <div class="theme-ripple" id="themeRipple"></div>
@@ -1093,17 +1265,17 @@ a:focus-visible, button:focus-visible {
 
         <!-- Stats column -->
         <div style="display:flex;flex-direction:column;gap:20px;">
-          <div class="reveal" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
+          <div class="reveal stat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Experience</div>
-            <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--accent-light);">8+</div>
+            <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--accent-light);">4+</div>
             <div style="font-size:14px;color:var(--text-muted);">years shipping native Android</div>
           </div>
-          <div class="reveal reveal-delay-1" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
+          <div class="reveal reveal-delay-1 stat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Impact</div>
             <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--gold);">M+</div>
             <div style="font-size:14px;color:var(--text-muted);">installs on consumer apps shipped</div>
           </div>
-          <div class="reveal reveal-delay-2" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
+          <div class="reveal reveal-delay-2 stat-card" style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 30px;">
             <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Startup perf</div>
             <div style="font-size:42px;font-weight:700;letter-spacing:-.04em;color:var(--rose);">↓</div>
             <div style="font-size:14px;color:var(--text-muted);">reduced cold-start via trace profiling</div>
@@ -1118,6 +1290,7 @@ a:focus-visible, button:focus-visible {
     </section>
 
     <!-- ====== STACK — EXPANDABLE TABS ====== -->
+    <div class="section-divider"></div>
     <section class="stack-section" id="stack">
       <div class="section-label">02 — Stack</div>
       <h2 class="section-title reveal">Stack<span style="color:var(--accent)">.</span>kt</h2>
@@ -1273,6 +1446,7 @@ a:focus-visible, button:focus-visible {
     </section>
 
     <!-- ====== PROJECTS ====== -->
+    <div class="section-divider"></div>
     <section class="projects-section" id="projects">
       <div class="section-label">03 — Projects</div>
       <h2 class="section-title reveal">Projects<span style="color:var(--accent)">.</span>kt</h2>
@@ -1316,6 +1490,7 @@ a:focus-visible, button:focus-visible {
     </section>
 
     <!-- ====== WORK ====== -->
+    <div class="section-divider"></div>
     <section class="work-section" id="work">
       <div class="section-label">04 — Experience</div>
       <h2 class="section-title reveal">Work<span style="color:var(--accent)">.</span>kt</h2>
@@ -1334,12 +1509,64 @@ a:focus-visible, button:focus-visible {
             </div>
             <p>Owning core app modules end to end — architecture, performance audits, and mentoring on Compose migration from the legacy View system.</p>
             <p>Shipped and maintained consumer apps with millions of installs. Cut cold-start time by profiling startup traces and trimming the dependency graph.</p>
+            <div class="work-tags">
+              <span class="work-tag">Kotlin</span>
+              <span class="work-tag">Jetpack Compose</span>
+              <span class="work-tag">Hilt</span>
+              <span class="work-tag">Performance</span>
+              <span class="work-tag">Compose Migration</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="work-item">
+          <div class="work-dot"></div>
+          <div class="work-card">
+            <div class="work-card-head">
+              <div>
+                <div class="work-hash">7bc14e0</div>
+                <h3>Android Developer — Freelance</h3>
+              </div>
+              <span class="work-card-date">2022 — 2024</span>
+            </div>
+            <p>Built and shipped multiple client Android apps from scratch. Architected offline-first apps using Room and DataStore, integrated REST APIs with Retrofit, and delivered clean, maintainable codebases.</p>
+            <p>Developed ArticleFlow as a personal project — now live on the Play Store with active users.</p>
+            <div class="work-tags">
+              <span class="work-tag">MVVM</span>
+              <span class="work-tag">Room</span>
+              <span class="work-tag">Retrofit</span>
+              <span class="work-tag">Offline-first</span>
+              <span class="work-tag">Play Store</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="work-item">
+          <div class="work-dot"></div>
+          <div class="work-card">
+            <div class="work-card-head">
+              <div>
+                <div class="work-hash">d92a3f5</div>
+                <h3>Junior Android Developer</h3>
+              </div>
+              <span class="work-card-date">2020 — 2022</span>
+            </div>
+            <p>Started native Android development — XML layouts, Fragment navigation, RecyclerView adapters, and the art of reading three-year-old Java and translating it into Kotlin.</p>
+            <p>Learned the hard way why architecture matters. Started applying MVVM with ViewModel and LiveData to keep logic out of Activities.</p>
+            <div class="work-tags">
+              <span class="work-tag">Kotlin</span>
+              <span class="work-tag">XML Layouts</span>
+              <span class="work-tag">LiveData</span>
+              <span class="work-tag">ViewModel</span>
+              <span class="work-tag">Navigation</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ====== TESTIMONIALS ====== -->
+    <div class="section-divider"></div>
     <section class="testimonials-section" id="testimonials">
       <div class="section-label">05 — Reviews</div>
       <h2 class="section-title reveal">Reviews<span style="color:var(--accent)">.</span>kt</h2>
@@ -1666,7 +1893,7 @@ toggle.addEventListener('click', e => {
 const CODE = [
   [{c:'t-kw',s:'class '},{c:'t-cls',s:'Haresh'},{c:'',s:' : '},{c:'t-cls',s:'AndroidEngineer'},{c:'',s:'() {'}],
   [{c:'',s:''}],
-  [{c:'t-com',s:'    // 8+ years shipping native Android apps'}],
+  [{c:'t-com',s:'    // 4+ years shipping native Android apps'}],
   [{c:'t-kw',s:'    val '},{c:'t-prop',s:'location'},{c:'',s:' = '},{c:'t-str',s:'"Ahmedabad, India"'}],
   [{c:'t-kw',s:'    val '},{c:'t-prop',s:'role'},{c:'',s:' = '},{c:'t-str',s:'"Software Engineer, Android"'}],
   [{c:'t-kw',s:'    val '},{c:'t-prop',s:'stack'},{c:'',s:' = '},{c:'t-fn',s:'listOf'},{c:'',s:'('},{c:'t-str',s:'"Kotlin"'},{c:'',s:', '},{c:'t-str',s:'"Compose"'},{c:'',s:', '},{c:'t-str',s:'"Coroutines"'},{c:'',s:')'}],
@@ -1767,6 +1994,56 @@ document.querySelectorAll('.project-card').forEach(card => {
     card.style.setProperty('--mx', `${e.clientX-r.left}px`);
     card.style.setProperty('--my', `${e.clientY-r.top}px`);
   });
+});
+
+/* ============================================================
+   CONNECT CARD MOUSE GLOW
+   ============================================================ */
+const connectCard = document.querySelector('.connect-card');
+if (connectCard) {
+  connectCard.addEventListener('mousemove', e => {
+    const r = connectCard.getBoundingClientRect();
+    connectCard.style.setProperty('--mx', `${((e.clientX-r.left)/r.width)*100}%`);
+    connectCard.style.setProperty('--my', `${((e.clientY-r.top)/r.height)*100}%`);
+  });
+}
+
+/* ============================================================
+   SCROLL PROGRESS BAR
+   ============================================================ */
+const progressBar = document.getElementById('scrollProgress');
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  progressBar.style.transform = `scaleX(${scrolled / maxScroll})`;
+}, { passive: true });
+
+/* ============================================================
+   BACK TO TOP
+   ============================================================ */
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('visible', window.scrollY > 600);
+}, { passive: true });
+backTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+/* ============================================================
+   SECTION LABEL OBSERVER
+   ============================================================ */
+const labelIO = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in-view'); labelIO.unobserve(e.target); }
+  });
+}, { threshold: .2 });
+document.querySelectorAll('.section-label').forEach(el => labelIO.observe(el));
+
+/* ============================================================
+   WORK ITEM STAGGER
+   ============================================================ */
+document.querySelectorAll('.work-item').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.12}s`;
 });
 </script>
 </body>
